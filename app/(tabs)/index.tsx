@@ -202,15 +202,16 @@ export default function App() {
               </View>
             </View>
           </View>
-          <View className="mb-6 flex-row flex-wrap items-center justify-center gap-4">
+          <View className="mb-6 flex-row flex-wrap items-center justify-center gap-7">
             <TouchableOpacity
               onPress={() => router.push('/card')}
-              className="relative h-[213px] w-[45%] overflow-hidden rounded-xl">
+              className="relative aspect-[3/4] w-[45%] overflow-hidden rounded-xl">
               <Image
                 source={{
                   uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBwpjg4qW1fFDGgt8m2StSBGHeyAJkCGfTZQ&s',
                 }}
                 className="h-full w-full"
+                resizeMode="cover"
               />
               <LinearGradient
                 colors={['transparent', 'rgba(15, 23, 42, 0.35)', 'rgba(15, 23, 42, 0.85)']}
@@ -223,7 +224,7 @@ export default function App() {
                 </View>
               </LinearGradient>
             </TouchableOpacity>
-            <View className="relative h-[213px] w-[45%] overflow-hidden rounded-xl">
+            <View className="relative aspect-[3/4] w-[45%] overflow-hidden rounded-xl">
               <Image
                 source={{
                   uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBwpjg4qW1fFDGgt8m2StSBGHeyAJkCGfTZQ&s',
@@ -241,7 +242,7 @@ export default function App() {
                 </View>
               </LinearGradient>
             </View>
-            <View className="relative h-[213px] w-[45%] overflow-hidden rounded-xl">
+            <View className="relative  aspect-[3/4] w-[45%] overflow-hidden rounded-xl">
               <Image
                 source={{
                   uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBwpjg4qW1fFDGgt8m2StSBGHeyAJkCGfTZQ&s',
@@ -259,7 +260,7 @@ export default function App() {
                 </View>
               </LinearGradient>
             </View>
-            <View className="relative h-[213px] w-[45%] overflow-hidden rounded-xl">
+            <View className="relative  aspect-[3/4] w-[45%] overflow-hidden rounded-xl">
               <Image
                 source={{
                   uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBwpjg4qW1fFDGgt8m2StSBGHeyAJkCGfTZQ&s',
