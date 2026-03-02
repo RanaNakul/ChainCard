@@ -21,7 +21,6 @@ export default function RootLayout() {
             animation: 'ios_from_right',
           }}>
           <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="(camera)" />
         </Stack>
       </SafeAreaProvider>
     </ThemeProvider>

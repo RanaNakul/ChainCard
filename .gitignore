@@ -13,6 +13,7 @@ web-build/
 
 .env
 bun.lock
+bun.lockb
 
 ios
 android
