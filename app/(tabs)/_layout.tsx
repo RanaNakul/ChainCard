@@ -1,8 +1,10 @@
-import { Tabs } from 'expo-router';
+import { Tabs, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { View, Pressable, Text } from 'react-native';
 
 export default function TabsLayout() {
+  const router = useRouter();
+
   return (
     <Tabs
       screenOptions={{
@@ -40,10 +42,12 @@ export default function TabsLayout() {
         options={{
           title: '',
           tabBarIcon: () => null,
-          tabBarButton: (props) => (
+          tabBarButton: () => (
             <Pressable
-              onPress={props.onPress}
-              className="-top-[5px] flex-1 items-center justify-center">
+              onPress={() => router.push('/scanScreen')}
+              className="-top-[5px] flex-1 items-center justify-center"
+              accessibilityRole="button"
+              accessibilityLabel="Scan card">
               <View className="elevation-8 h-[68px] w-[68px] items-center justify-center rounded-full bg-[#9945FF] shadow-lg shadow-[#9945FF]">
                 <Ionicons name="scan-outline" size={24} color="#fff" />
                 <Text className="text-sm text-white">Scan</Text>

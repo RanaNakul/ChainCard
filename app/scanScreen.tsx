@@ -46,9 +46,10 @@ export default function ScanScreen() {
   return (
     <SafeAreaView className="flex-1 bg-black">
       <StatusBar style="light" />
+      <View className="flex-1">
+        <CameraView style={{ flex: 1 }} facing={facing} flash={flash} />
 
-      <CameraView style={{ flex: 1 }} facing={facing} flash={flash}>
-        <View className="flex-1 bg-black/25 px-5 pb-7 pt-4">
+        <View pointerEvents="box-none" className="absolute inset-0 bg-black/25 px-5 pb-7 pt-4">
           <View className="mb-6 flex-row items-center justify-between">
             <Pressable className="h-12 flex-1 flex-row items-center justify-between rounded-xl border border-white/35 bg-black/40 px-4">
               <Text className="text-lg font-semibold text-white">Pokemon</Text>
@@ -91,7 +92,7 @@ export default function ScanScreen() {
             </Pressable>
           </View>
         </View>
-      </CameraView>
+      </View>
     </SafeAreaView>
   );
 }
