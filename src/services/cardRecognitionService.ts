@@ -1,4 +1,4 @@
-import { setMap } from "../lib/setMap";
+import { setMap } from '../lib/setMap';
 
 async function extractTextFromImage(imageUri: string): Promise<string> {
   const apiKey = process.env.EXPO_PUBLIC_GOOGLE_VISION_API_KEY;
