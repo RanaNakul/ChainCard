@@ -1,34 +1,113 @@
-import React, { useMemo, useState } from 'react';
-import { Image, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  ActivityIndicator,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useCardStorage } from '../../src/stores/cardStorage';
 
-const RECENT_CARD_IMAGE =
-  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRBwpjg4qW1fFDGgt8m2StSBGHeyAJkCGfTZQ&s';
+const SEARCH_API_URL = 'https://api.tcgdex.net/v2/en/cards?name=';
 
-const recentCards = Array.from({ length: 4 }).map((_, index) => ({
-  id: `recent-card-${index}`,
-  image: RECENT_CARD_IMAGE,
-}));
+type CardSearchResult = {
+  id: string;
+  name?: string;
+  localId?: string;
+  category?: string;
+  rarity?: string;
+  image?: string | { low?: string; high?: string; url?: string };
+  set?: {
+    name?: string;
+  };
+};
 
-const recentSearches = ['Pikachu', 'Charizard', 'Luffy'];
+function resolveCardImage(image?: CardSearchResult['image']) {
+  if (!image) return undefined;
 
-const quickFilters = [
-  'Pokemon TCG',
-  'One Piece Card Game',
-  'Dragon Ballz Card Game',
-  'Racing',
-  'MMA',
-  'Basketball',
-];
+  if (typeof image === 'string') {
+    if (/\.(png|jpe?g|webp)(\?.*)?$/i.test(image)) return image;
+    if (image.endsWith('/')) return `${image}low.jpg`;
+    return `${image}/low.jpg`;
+  }
+
+  return image.low ?? image.high ?? image.url;
+}
+
+function normalizeCards(payload: any): CardSearchResult[] {
+  const rawCards = Array.isArray(payload)
+    ? payload
+    : Array.isArray(payload?.cards)
+      ? payload.cards
+      : [];
+
+  return rawCards.filter((card: any) => card && typeof card.id === 'string');
+}
 
 export default function SearchScreen() {
   const [query, setQuery] = useState('');
+  const searchHistory = useCardStorage((state) => state.searchHistory ?? []);
+  const addToHistory = useCardStorage((state) => state.addToHistory);
+  const [results, setResults] = useState<CardSearchResult[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
+
+  const trimmedQuery = query.trim();
 
   const filteredRecentSearches = useMemo(() => {
-    if (!query.trim()) return recentSearches;
-    return recentSearches.filter((item) => item.toLowerCase().includes(query.toLowerCase().trim()));
-  }, [query]);
+    if (!trimmedQuery) return searchHistory;
+    return searchHistory.filter((item) => item.toLowerCase().includes(trimmedQuery.toLowerCase()));
+  }, [searchHistory, trimmedQuery]);
+
+  useEffect(() => {
+    if (!trimmedQuery) {
+      setResults([]);
+      setError(null);
+      setIsLoading(false);
+      return;
+    }
+
+    const abortController = new AbortController();
+    const timeoutId = setTimeout(async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+
+        const response = await fetch(`${SEARCH_API_URL}${encodeURIComponent(trimmedQuery)}`, {
+          signal: abortController.signal,
+        });
+        const payload = await response.json();
+
+        if (!response.ok) {
+          throw new Error(payload?.message || 'Failed to fetch cards.');
+        }
+
+        setResults(normalizeCards(payload));
+      } catch (fetchError: any) {
+        if (fetchError?.name === 'AbortError') return;
+        setResults([]);
+        setError(fetchError?.message || 'Unable to fetch cards. Please try again.');
+      } finally {
+        setIsLoading(false);
+      }
+    }, 400);
+
+    return () => {
+      abortController.abort();
+      clearTimeout(timeoutId);
+    };
+  }, [trimmedQuery, retryCount]);
+
+  const addSearchToHistory = (value: string) => {
+    const term = value.trim();
+    if (!term) return;
+    addToHistory(term);
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-white">
@@ -41,6 +120,7 @@ export default function SearchScreen() {
               placeholderTextColor="#737373"
               value={query}
               onChangeText={setQuery}
+              onSubmitEditing={() => addSearchToHistory(query)}
               className="ml-2 flex-1 text-base text-neutral-900"
             />
             {query.length > 0 ? (
@@ -52,51 +132,113 @@ export default function SearchScreen() {
             ) : null}
           </View>
 
-          <Text className="mb-3 text-lg font-semibold text-neutral-900">Recent</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="pb-2">
-            <View className="flex-row gap-3">
-              {recentCards.map((card) => (
-                <View
-                  key={card.id}
-                  className="h-28 w-20 overflow-hidden rounded-lg border border-neutral-300 bg-neutral-200">
-                  <Image source={{ uri: card.image }} className="h-full w-full" />
+          {!trimmedQuery ? (
+            <>
+              <Text className="mb-3 text-lg font-semibold text-neutral-900">Recent Searches</Text>
+              <View className="rounded-xl border border-neutral-200 bg-white px-4 py-2">
+                {filteredRecentSearches.length === 0 ? (
+                  <Text className="py-3 text-neutral-500">No recent searches</Text>
+                ) : (
+                  filteredRecentSearches.map((item, index) => (
+                    <Pressable
+                      key={item}
+                      onPress={() => {
+                        setQuery(item);
+                        addToHistory(item);
+                      }}
+                      className={`flex-row items-center justify-between py-3 ${
+                        index < filteredRecentSearches.length - 1
+                          ? 'border-b border-neutral-200'
+                          : ''
+                      }`}>
+                      <View className="flex-row items-center">
+                        <Text className="mr-2 text-neutral-500">{index + 1}.</Text>
+                        <Text className="text-lg font-medium text-neutral-900">{item}</Text>
+                      </View>
+                      <Ionicons name="arrow-up-outline" size={18} color="#6B7280" />
+                    </Pressable>
+                  ))
+                )}
+              </View>
+            </>
+          ) : null}
+
+          {trimmedQuery ? (
+            <View className="mt-4">
+              {isLoading ? (
+                <View className="items-center rounded-xl border border-neutral-200 bg-white py-10">
+                  <ActivityIndicator color="#171717" />
+                  <Text className="mt-3 text-neutral-600">Searching cards...</Text>
                 </View>
-              ))}
+              ) : null}
+
+              {!isLoading && error ? (
+                <View className="items-center rounded-xl border border-red-200 bg-red-50 px-4 py-6">
+                  <Text className="text-center text-sm text-red-700">{error}</Text>
+                  <Pressable
+                    onPress={() => setRetryCount((count) => count + 1)}
+                    className="mt-4 rounded-lg border border-red-300 bg-white px-4 py-2">
+                    <Text className="font-medium text-red-700">Retry</Text>
+                  </Pressable>
+                </View>
+              ) : null}
+
+              {!isLoading && !error && results.length === 0 ? (
+                <View className="rounded-xl border border-neutral-200 bg-white py-8">
+                  <Text className="text-center text-neutral-500">
+                    No cards found for {trimmedQuery}
+                  </Text>
+                </View>
+              ) : null}
+
+              {!isLoading && !error && results.length > 0 ? (
+                <View className="rounded-xl border border-neutral-200 bg-white px-3 py-3">
+                  {results.map((card, index) => {
+                    const imageUri = resolveCardImage(card.image);
+                    return (
+                      <View
+                        key={card.id}
+                        className={`flex-row py-3 ${
+                          index < results.length - 1 ? 'border-b border-neutral-200' : ''
+                        }`}>
+                        <View className="h-24 w-16 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100">
+                          {imageUri ? (
+                            <Image
+                              source={{ uri: imageUri }}
+                              className="h-full w-full"
+                              resizeMode="cover"
+                            />
+                          ) : (
+                            <View className="h-full w-full items-center justify-center">
+                              <Ionicons name="image-outline" size={18} color="#737373" />
+                            </View>
+                          )}
+                        </View>
+                        <View className="ml-3 flex-1 justify-center">
+                          <Text
+                            className="text-base font-semibold text-neutral-900"
+                            numberOfLines={1}>
+                            {card.name || 'Unknown card'}
+                          </Text>
+                          <Text className="mt-1 text-sm text-neutral-600" numberOfLines={1}>
+                            {card.set?.name || 'Unknown set'}
+                          </Text>
+                          <Text className="mt-1 text-xs text-neutral-500">
+                            {[card.category, card.rarity].filter(Boolean).join(' • ') || card.id}
+                          </Text>
+                          {card.localId ? (
+                            <Text className="mt-1 text-xs font-medium text-neutral-500">
+                              #{card.localId}
+                            </Text>
+                          ) : null}
+                        </View>
+                      </View>
+                    );
+                  })}
+                </View>
+              ) : null}
             </View>
-          </ScrollView>
-
-          <View className="mt-4 rounded-xl border border-neutral-200 bg-white px-4 py-3">
-            {filteredRecentSearches.length === 0 ? (
-              <Text className="py-2 text-neutral-500">No recent results</Text>
-            ) : (
-              filteredRecentSearches.map((item, index) => (
-                <View
-                  key={item}
-                  className={`flex-row items-center justify-between py-3 ${
-                    index < filteredRecentSearches.length - 1 ? 'border-b border-neutral-200' : ''
-                  }`}>
-                  <View className="flex-row items-center">
-                    <Text className="mr-2 text-neutral-500">{index + 1}.</Text>
-                    <Text className="text-lg font-medium text-neutral-900">{item}</Text>
-                  </View>
-                  <Ionicons name="arrow-up-outline" size={18} color="#6B7280" />
-                </View>
-              ))
-            )}
-          </View>
-
-          <Text className="mb-3 mt-6 text-xl font-semibold text-neutral-900">Quick Filters</Text>
-          <View className="flex-row flex-wrap justify-between">
-            {quickFilters.map((filter) => (
-              <Pressable
-                key={filter}
-                className="mb-3 h-24 w-[48%] items-center justify-center rounded-lg border border-neutral-300 bg-white px-3">
-                <Text className="text-center text-base font-semibold text-neutral-900">
-                  {filter}
-                </Text>
-              </Pressable>
-            ))}
-          </View>
+          ) : null}
         </View>
       </ScrollView>
     </SafeAreaView>
