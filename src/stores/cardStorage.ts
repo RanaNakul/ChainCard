@@ -5,7 +5,7 @@ import { asyncStorageAdapter } from '../lib/storage';
 
 const CARD_SCANS_DIR = `${FileSystem.documentDirectory}data/Cards/`;
 
-interface CardScan {
+export interface CardScan {
   id: string;
   image: string;
   scannedAt: number;
@@ -14,11 +14,22 @@ interface CardScan {
 
 interface CardStorageState {
   cards: CardScan[];
+  isIdentifying: boolean;
   isSaving: boolean;
   error: string | null;
-  saveCardScan: (croppedUri: string, cardData?: any) => Promise<CardScan>;
+  totalPortfolioValue?: number;
+  favoriteCards?: CardScan[];
+  searchHistory?: string[];
+  rarestCards?: CardScan[];
+  theme?: 'light' | 'dark';
+  saveCardScan: (imageUri: string, cardData?: any) => Promise<CardScan>;
   removeScan: (id: string) => Promise<void>;
-  clearScans: () => Promise<void>;
+  toggleFavorite: (id: string) => void;
+  clearAll: () => Promise<void>;
+  calPortfolioValue: () => Promise<void>;
+  addToHistory: (query: string) => void;
+  setISaveing: (isSaving: boolean) => void;
+  setIsIdentifying: (isIdentifying: boolean) => void;
 }
 
 function getFileExtension(uri: string): string {
@@ -54,7 +65,7 @@ async function persistCardScan(croppedUri: string, cardData?: any): Promise<Card
     cardData,
   };
 
-  console.log("cardd: ", card);
+  console.log('cardd: ', card);
 
   return card;
 }
@@ -65,11 +76,16 @@ export const useCardStorage = create<CardStorageState>()(
       cards: [],
       isSaving: false,
       error: null,
-     
-      saveCardScan: async (croppedUri: string, cardData) => {
-        set({ isSaving: true, error: null });
+      totalPortfolioValue: 0,
+      isIdentifying: false,
+      favoriteCards: [],
+      searchHistory: [],
+      rarestCards: [],
+      theme: 'light',
+      saveCardScan: async (imageUri: string, cardData) => {
+        set({ error: null });
         try {
-          const card = await persistCardScan(croppedUri , cardData);
+          const card = await persistCardScan(imageUri, cardData);
           set((state) => ({
             cards: [...state.cards, card],
             isSaving: false,
@@ -82,17 +98,74 @@ export const useCardStorage = create<CardStorageState>()(
           });
           throw error;
         }
-      },  
+      },
+
+      addToHistory: (query: string) =>
+        set((state) => {
+          const term = query.trim();
+          if (!term) return { searchHistory: state.searchHistory ?? [] };
+
+          return {
+            searchHistory: [
+              term,
+              ...(state.searchHistory ?? []).filter(
+                (item) => item.toLowerCase() !== term.toLowerCase()
+              ),
+            ].slice(0, 8),
+          };
+        }),
+
+      calPortfolioValue: async () => {
+        set((state) => ({
+          totalPortfolioValue: state.cards.reduce(
+            (acc, card) =>
+              acc +
+              Number(
+                card?.cardData?.pricing?.tcgplayer?.holofoil?.marketPrice ??
+                  card?.cardData?.pricing?.cardmarket?.avg1 ??
+                  0
+              ),
+            0
+          ),
+        }));
+      },
 
       removeScan: async (id: string) => {
         set((state) => ({
           cards: state.cards.filter((card) => card.id !== id),
-          error: null
+          favoriteCards: (state.favoriteCards ?? []).filter((card) => card.id !== id),
+          error: null,
         }));
       },
 
-      clearScans: async () => {
-        set({ cards: [], error: null });
+      toggleFavorite: (id: string) => {
+        set((state) => {
+          const favorites = state.favoriteCards ?? [];
+          const isAlreadyFavorite = favorites.some((card) => card.id === id);
+
+          if (isAlreadyFavorite) {
+            return {
+              favoriteCards: favorites.filter((card) => card.id !== id),
+            };
+          }
+
+          const cardToAdd = state.cards.find((card) => card.id === id);
+          if (!cardToAdd) {
+            return { favoriteCards: favorites };
+          }
+
+          return {
+            favoriteCards: [...favorites, cardToAdd],
+          };
+        });
+      },
+
+      setIsIdentifying: (isIdentifying: boolean) => set({ isIdentifying }),
+
+      setISaveing: (isSaving: boolean) => set({ isSaving }),
+
+      clearAll: async () => {
+        set({ cards: [], favoriteCards: [], totalPortfolioValue: 0, error: null });
       },
     }),
     {
@@ -102,7 +175,6 @@ export const useCardStorage = create<CardStorageState>()(
   )
 );
 
-// Backward-compatible function for existing callers in screens/services.
 export async function saveCardScan(croppedUri: string): Promise<CardScan> {
   return useCardStorage.getState().saveCardScan(croppedUri);
 }
