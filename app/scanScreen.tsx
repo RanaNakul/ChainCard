@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from 'react';
-import { Alert, Image, Modal, Pressable, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Modal, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
@@ -23,26 +23,54 @@ export default function ScanScreen() {
   const [scanAreaLayout, setScanAreaLayout] = useState<LayoutRect | null>(null);
   const [frameLayout, setFrameLayout] = useState<LayoutRect | null>(null);
   const [previewImageUri, setPreviewImageUri] = useState<string | null>(null);
+  const [card, setCard] = useState<any>(null);
+  const setISaveing = useCardStorage((s) => s.setISaveing);
+  const setIsIdentifying = useCardStorage((s) => s.setIsIdentifying);
+  const isIdentifying = useCardStorage((s) => s.isIdentifying);
+  const [imageUri, setImageUri] = useState<string>('');
+
   const cameraRef = useRef<CameraView | null>(null);
   const saveCardScan = useCardStorage((s) => s.saveCardScan);
+  const calPortfolioValue = useCardStorage((s) => s.calPortfolioValue);
+  const isSaving = useCardStorage((s) => s.isSaving);
 
   const processScannedImage = useCallback(
     async (imageUri: string) => {
+      setIsIdentifying(true);
       let card;
       try {
         const recognized = await recognizeCard(imageUri);
         card = recognized?.card;
-        // console.log('[scanScreen] Recognized card:', card);
+        setCard(card);
+        console.log('[scanScreen] Recognized card:', card);
       } catch (recognitionError) {
         console.error('[scanScreen] Recognition failed:', recognitionError);
-        Alert.alert('Saved', 'Image was saved, but recognition failed.');
+        Alert.alert('Recognition failed', 'Could not recognize the card. Please try again with a clearer image.');
       }
 
-      await saveCardScan(imageUri, card);
+      setIsIdentifying(false);
       setPreviewImageUri(card?.image);
     },
-    [saveCardScan]
+    [setIsIdentifying]
   );
+
+  const saveCard = useCallback(async () => {
+    setISaveing(true);
+    try {
+      const savedCard = await saveCardScan(imageUri, card);
+      setCard(savedCard);
+      setPreviewImageUri(null);
+      calPortfolioValue();
+    } catch (error) {
+      console.error('[scanScreen] Saving failed:', error);
+      Alert.alert('Save failed', 'Could not save the scanned card. Please try again.');
+    } finally {
+      router.push({
+        pathname: '/card',
+        params: { id: card?.id },
+      });
+    }
+  }, [setISaveing, saveCardScan, imageUri, card, calPortfolioValue, router]);
 
   const handleCapture = useCallback(async () => {
     if (isCapturing) return;
@@ -111,6 +139,7 @@ export default function ScanScreen() {
         }
       );
 
+      setImageUri(cropped.uri);
       await processScannedImage(cropped.uri);
     } catch (error) {
       console.error('[scanScreen] Capture failed:', error);
@@ -148,6 +177,7 @@ export default function ScanScreen() {
         return;
       }
 
+      setImageUri(imageUri);
       await processScannedImage(imageUri);
     } catch (error) {
       console.error('[scanScreen] Gallery pick failed:', error);
@@ -185,11 +215,30 @@ export default function ScanScreen() {
     );
   }
 
+  if (isIdentifying) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center bg-black">
+        <StatusBar style="light" />
+        <ActivityIndicator color="#FFFFFF" size="large" />
+        <Text className="mt-4 text-base text-white">Identifying card...</Text>
+      </SafeAreaView>
+    );
+  }
+  if (isSaving) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center bg-black">
+        <StatusBar style="light" />
+        <ActivityIndicator color="#FFFFFF" size="large" />
+        <Text className="mt-4 text-base text-white">Saving card...</Text>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-black">
       <StatusBar style="light" />
 
-      <View className="flex-1" >
+      <View className="flex-1">
         <CameraView
           ref={cameraRef}
           style={{ flex: 1 }}
@@ -197,11 +246,13 @@ export default function ScanScreen() {
           enableTorch={facing === 'back' && torchEnabled}
           onLayout={(event) => setPreviewLayout(event.nativeEvent.layout)}></CameraView>
 
-        <View pointerEvents="box-none" className="flex-1 absolute inset-0 z-10 bg-black/25 px-5 pb-7 pt-4">
+        <View
+          pointerEvents="box-none"
+          className="absolute inset-0 z-10 flex-1 bg-black/25 px-5 pb-7 pt-4">
           <View className="mb-6 flex-row items-center justify-between">
             <Pressable className="h-12 flex-1 flex-row items-center justify-between rounded-xl border border-white/35 bg-black/40 px-4">
-              <Text className="text-lg font-semibold text-white">Pokemon</Text>
-              <Ionicons name="chevron-down" size={20} color="#FFFFFF" />
+              <Text className="text-lg font-semibold text-white">Pokemon Card</Text>
+              {/* <Ionicons name="chevron-down" size={20} color="#FFFFFF" /> */}
             </Pressable>
 
             <Pressable
@@ -214,7 +265,7 @@ export default function ScanScreen() {
           <View
             className="flex-1 items-center"
             onLayout={(event) => setScanAreaLayout(event.nativeEvent.layout)}>
-            <Text className="mb-4 text-3xl font-semibold tracking-widest text-white">
+            <Text className="mb-4 mt-6 text-3xl font-semibold tracking-widest text-white">
               FRONT OF CARD
             </Text>
             <View
@@ -270,11 +321,20 @@ export default function ScanScreen() {
                 resizeMode="cover"
               />
             ) : null}
-            <Pressable
-              onPress={() => setPreviewImageUri(null)}
-              className="mt-4 rounded-xl bg-white py-3 active:opacity-80">
-              <Text className="text-center font-semibold text-neutral-900">Done</Text>
-            </Pressable>
+            <View className="mt-3 flex-row items-center justify-center gap-2">
+              <Pressable
+                onPress={() => setPreviewImageUri(null)}
+                className="mt-4 w-1/2 rounded-xl bg-neutral-600 py-3 active:opacity-80">
+                <Text className="text-center font-semibold text-white">Retake</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  saveCard();
+                }}
+                className="mt-4 w-1/2 rounded-xl bg-green-500 py-3 active:opacity-80">
+                <Text className="text-center font-semibold text-white">Save</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
       </Modal>
