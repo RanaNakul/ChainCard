@@ -13,7 +13,7 @@ export default function TabsLayout() {
           backgroundColor: '#fff',
           borderTopColor: '#d4d4d4',
           flexDirection: 'row',
-          height: 75,
+          height: 85,
           paddingTop: 10,
         },
         tabBarActiveTintColor: '#14F195',
@@ -48,7 +48,7 @@ export default function TabsLayout() {
               className="-top-[5px] flex-1 items-center justify-center"
               accessibilityRole="button"
               accessibilityLabel="Scan card">
-              <View className="elevation-8 h-[68px] w-[68px] items-center justify-center rounded-full bg-[#9945FF] shadow-lg shadow-[#9945FF]">
+              <View className="elevation-8 h-[68px] w-[68px] mt-1 items-center justify-center rounded-full bg-[#9945FF] shadow-lg shadow-[#9945FF]">
                 <Ionicons name="scan-outline" size={24} color="#fff" />
                 <Text className="text-sm text-white">Scan</Text>
               </View>
