@@ -112,6 +112,7 @@ export default function SearchScreen() {
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-neutral-950">
       <ScrollView className="flex-1">
+        <Text className="mb-4 mt-3 text-center text-2xl font-bold text-[#9945FF]">Search</Text>
         <View className="px-5 pb-8 pt-3">
           <View className="mb-5 flex-row items-center rounded-full border border-neutral-300 bg-neutral-100 px-4 py-3 dark:border-neutral-700 dark:bg-neutral-900">
             <Ionicons name="search-outline" size={20} color="#525252" />
@@ -134,10 +135,14 @@ export default function SearchScreen() {
 
           {!trimmedQuery ? (
             <>
-              <Text className="mb-3 text-lg font-semibold text-neutral-900 dark:text-neutral-100">Recent Searches</Text>
+              <Text className="mb-3 text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+                Recent Searches
+              </Text>
               <View className="rounded-xl border border-neutral-200 bg-white px-4 py-2 dark:border-neutral-700 dark:bg-neutral-900">
                 {filteredRecentSearches.length === 0 ? (
-                  <Text className="py-3 text-neutral-500 dark:text-neutral-400">No recent searches</Text>
+                  <Text className="py-3 text-neutral-500 dark:text-neutral-400">
+                    No recent searches
+                  </Text>
                 ) : (
                   filteredRecentSearches.map((item, index) => (
                     <Pressable
@@ -152,8 +157,12 @@ export default function SearchScreen() {
                           : ''
                       }`}>
                       <View className="flex-row items-center">
-                        <Text className="mr-2 text-neutral-500 dark:text-neutral-400">{index + 1}.</Text>
-                        <Text className="text-lg font-medium text-neutral-900 dark:text-neutral-100">{item}</Text>
+                        <Text className="mr-2 text-neutral-500 dark:text-neutral-400">
+                          {index + 1}.
+                        </Text>
+                        <Text className="text-lg font-medium text-neutral-900 dark:text-neutral-100">
+                          {item}
+                        </Text>
                       </View>
                       <Ionicons name="arrow-up-outline" size={18} color="#6B7280" />
                     </Pressable>
@@ -168,7 +177,9 @@ export default function SearchScreen() {
               {isLoading ? (
                 <View className="items-center rounded-xl border border-neutral-200 bg-white py-10 dark:border-neutral-700 dark:bg-neutral-900">
                   <ActivityIndicator color="#171717" />
-                  <Text className="mt-3 text-neutral-600 dark:text-neutral-400">Searching cards...</Text>
+                  <Text className="mt-3 text-neutral-600 dark:text-neutral-400">
+                    Searching cards...
+                  </Text>
                 </View>
               ) : null}
 
@@ -222,7 +233,9 @@ export default function SearchScreen() {
                             numberOfLines={1}>
                             {card.name || 'Unknown card'}
                           </Text>
-                          <Text className="mt-1 text-sm text-neutral-600 dark:text-neutral-400" numberOfLines={1}>
+                          <Text
+                            className="mt-1 text-sm text-neutral-600 dark:text-neutral-400"
+                            numberOfLines={1}>
                             {card.set?.name || 'Unknown set'}
                           </Text>
                           <Text className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
