@@ -1,0 +1,51 @@
+{
+  "cli": {
+    "version": ">= 13.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_SOLANA_NETWORK": "devnet",
+        "EXPO_PUBLIC_GOOGLE_VISION_API_KEY":"AIzaSyAJjZEZhasqiQEPBxF4nb9PgnLy_cs6bnA"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_SOLANA_NETWORK": "devnet",
+        "EXPO_PUBLIC_GOOGLE_VISION_API_KEY":"AIzaSyAJjZEZhasqiQEPBxF4nb9PgnLy_cs6bnA"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "env": {
+        "EXPO_PUBLIC_SOLANA_NETWORK": "mainnet-beta",
+        "EXPO_PUBLIC_GOOGLE_VISION_API_KEY":"AIzaSyAJjZEZhasqiQEPBxF4nb9PgnLy_cs6bnA"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./google-service-account.json",
+        "track": "internal"
+      },
+      "ios": {
+        "appleId": "your@email.com",
+        "ascAppId": "YOUR_APP_STORE_CONNECT_ID"
+      }
+    }
+  }
+}
