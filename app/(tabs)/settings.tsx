@@ -6,6 +6,7 @@ import { type AppTheme, useCardStorage } from '../../src/stores/cardStorage';
 
 type ThemeOption = 'System' | 'Light' | 'Dark';
 type LanguageOption = 'English' | 'Hindi' | 'Spanish';
+type NetworkOption = 'Devnet' | 'Mainnet';
 
 const THEME_LABEL_TO_VALUE: Record<ThemeOption, AppTheme> = {
   System: 'system',
@@ -115,26 +116,32 @@ function ActionRow({ icon, label, onPress }: ActionRowProps) {
 export default function SettingsScreen() {
   const selectedThemeValue = useCardStorage((state) => state.theme);
   const setTheme = useCardStorage((state) => state.setTheme);
+  const isDevnet = useCardStorage((state) => state.isDevnet);
+  const toggleNetwork = useCardStorage((state) => state.toggleNetwork);
   const selectedTheme = THEME_VALUE_TO_LABEL[selectedThemeValue ?? 'system'];
+  const selectedNetwork: NetworkOption = isDevnet ? 'Devnet' : 'Mainnet';
   const [selectedLanguage, setSelectedLanguage] = useState<LanguageOption>('English');
   const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
+  const [isNetworkDropdownOpen, setIsNetworkDropdownOpen] = useState(false);
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
 
   const themeOptions: readonly ThemeOption[] = ['System', 'Light', 'Dark'];
+  const networkOptions: readonly NetworkOption[] = ['Devnet', 'Mainnet'];
   const languageOptions: readonly LanguageOption[] = ['English', 'Hindi', 'Spanish'];
 
   const closeDropdowns = () => {
     setIsThemeDropdownOpen(false);
+    setIsNetworkDropdownOpen(false);
     setIsLanguageDropdownOpen(false);
   };
 
   return (
     <SafeAreaView className="flex-1 bg-white dark:bg-neutral-950">
       <View className="flex-1 px-5 pt-3">
-        {isThemeDropdownOpen || isLanguageDropdownOpen ? (
+        {isThemeDropdownOpen || isNetworkDropdownOpen || isLanguageDropdownOpen ? (
           <Pressable onPress={closeDropdowns} className="absolute inset-0 z-40" />
         ) : null}
-        <Text className="mb-4 text-center text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+        <Text className="mb-4 text-center text-2xl font-bold text-[#9945FF]">
           Settings
         </Text>
 
@@ -148,11 +155,33 @@ export default function SettingsScreen() {
               isDropdownOpen={isThemeDropdownOpen}
               onToggleDropdown={() => {
                 setIsThemeDropdownOpen((prev) => !prev);
+                setIsNetworkDropdownOpen(false);
                 setIsLanguageDropdownOpen(false);
               }}
               onSelectOption={(option) => {
                 setTheme(THEME_LABEL_TO_VALUE[option]);
                 setIsThemeDropdownOpen(false);
+              }}
+            />
+
+            <View className="h-px bg-neutral-200" />
+
+            <SelectorRow
+              icon={<Ionicons name="git-network-outline" size={18} color="#404040" />}
+              label="Network"
+              value={selectedNetwork}
+              options={networkOptions}
+              isDropdownOpen={isNetworkDropdownOpen}
+              onToggleDropdown={() => {
+                setIsNetworkDropdownOpen((prev) => !prev);
+                setIsThemeDropdownOpen(false);
+                setIsLanguageDropdownOpen(false);
+              }}
+              onSelectOption={(option) => {
+                if ((option === 'Devnet') !== isDevnet) {
+                  toggleNetwork();
+                }
+                setIsNetworkDropdownOpen(false);
               }}
             />
 
@@ -167,6 +196,7 @@ export default function SettingsScreen() {
               onToggleDropdown={() => {
                 setIsLanguageDropdownOpen((prev) => !prev);
                 setIsThemeDropdownOpen(false);
+                setIsNetworkDropdownOpen(false);
               }}
               onSelectOption={(option) => {
                 setSelectedLanguage(option);
