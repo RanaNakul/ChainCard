@@ -2,6 +2,7 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { asyncStorageAdapter } from '../lib/storage';
+import { PublicKey } from '@solana/web3.js';
 
 const CARD_SCANS_DIR = `${FileSystem.documentDirectory}data/Cards/`;
 
@@ -24,6 +25,9 @@ interface CardStorageState {
   searchHistory?: string[];
   rarestCards?: CardScan[];
   theme: AppTheme;
+  isDevnet: boolean;
+  connectedPublicKey: PublicKey | null;
+
   saveCardScan: (imageUri: string, cardData?: any) => Promise<CardScan>;
   removeScan: (id: string) => Promise<void>;
   toggleFavorite: (id: string) => void;
@@ -33,6 +37,8 @@ interface CardStorageState {
   setTheme: (theme: AppTheme) => void;
   setISaveing: (isSaving: boolean) => void;
   setIsIdentifying: (isIdentifying: boolean) => void;
+  toggleNetwork: () => void;
+  setConnectedPublicKey: (publicKey: PublicKey | null) => void;
 }
 
 function getFileExtension(uri: string): string {
@@ -85,6 +91,14 @@ export const useCardStorage = create<CardStorageState>()(
       searchHistory: [],
       rarestCards: [],
       theme: 'system',
+      isDevnet: true,
+      connectedPublicKey: null,
+
+      toggleNetwork: () => set((state) => ({ isDevnet: !state.isDevnet })),
+
+      setConnectedPublicKey: (publicKey: PublicKey | null) =>
+        set({ connectedPublicKey: publicKey }),
+      
       saveCardScan: async (imageUri: string, cardData) => {
         set({ error: null });
         try {
