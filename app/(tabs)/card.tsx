@@ -109,9 +109,9 @@ export default function CardScreen() {
 
   if (!selectedCard) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-[#F6F4EF] px-6">
-        <Text className="mb-2 text-xl font-semibold text-neutral-900">No card selected</Text>
-        <Text className="mb-6 text-center text-neutral-600">
+      <SafeAreaView className="flex-1 items-center justify-center bg-[#F6F4EF] px-6 dark:bg-neutral-950">
+        <Text className="mb-2 text-xl font-semibold text-neutral-900 dark:text-neutral-100">No card selected</Text>
+        <Text className="mb-6 text-center text-neutral-600 dark:text-neutral-400">
           Open this screen from your card list to view details.
         </Text>
         <Pressable onPress={() => router.back()} className="rounded-xl bg-neutral-900 px-5 py-3">
@@ -200,52 +200,52 @@ export default function CardScreen() {
     const rowTotal = qty * unitPrice;
 
     return (
-      <View className="flex-row items-center justify-between rounded-xl border border-neutral-200 px-3 py-3">
+      <View className="flex-row items-center justify-between rounded-xl border border-neutral-200 px-3 py-3 dark:border-neutral-700">
         <View className="w-[34%]">
-          <Text className="text-base font-semibold text-neutral-900">{label}</Text>
-          <Text className="text-xs text-neutral-500">{subtitle}</Text>
+          <Text className="text-base font-semibold text-neutral-900 dark:text-neutral-100">{label}</Text>
+          <Text className="text-xs text-neutral-500 dark:text-neutral-400">{subtitle}</Text>
         </View>
 
         <View className="w-[28%] flex-row items-center justify-center gap-2">
           <Pressable
             onPress={onMinus}
-            className="h-7 w-7 items-center justify-center rounded-full border border-neutral-300">
+            className="h-7 w-7 items-center justify-center rounded-full border border-neutral-300 dark:border-neutral-700">
             <Ionicons name="remove" size={14} color="#171717" />
           </Pressable>
-          <Text className="min-w-[18px] text-center text-base font-semibold text-neutral-900">
+          <Text className="min-w-[18px] text-center text-base font-semibold text-neutral-900 dark:text-neutral-100">
             {qty}
           </Text>
           <Pressable
             onPress={onPlus}
-            className="h-7 w-7 items-center justify-center rounded-full border border-neutral-300">
+            className="h-7 w-7 items-center justify-center rounded-full border border-neutral-300 dark:border-neutral-700">
             <Ionicons name="add" size={14} color="#171717" />
           </Pressable>
         </View>
 
         <View className="w-[34%] items-end">
-          <Text className="text-base font-semibold text-neutral-900">
+          <Text className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
             {formatCurrency(rowTotal)}
           </Text>
-          <Text className="text-xs text-neutral-500">{formatCurrency(unitPrice)} each</Text>
+          <Text className="text-xs text-neutral-500 dark:text-neutral-400">{formatCurrency(unitPrice)} each</Text>
         </View>
       </View>
     );
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F6F4EF]">
+    <SafeAreaView className="flex-1 bg-[#F6F4EF] dark:bg-neutral-950">
       <View className="px-4 pb-2 pt-1">
         <View className="flex-row items-center justify-between">
           <Pressable
             onPress={() => router.back()}
-            className="h-10 w-10 items-center justify-center rounded-full border border-neutral-300 bg-white">
+            className="h-10 w-10 items-center justify-center rounded-full border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-900">
             <Ionicons name="arrow-back" size={20} color="#171717" />
           </Pressable>
 
           <View className="flex-row items-center gap-2">
             <Pressable
               onPress={handleRemove}
-              className="flex-row items-center gap-1 rounded-full border border-neutral-300 bg-white px-3 py-2">
+              className="flex-row items-center gap-1 rounded-full border border-neutral-300 bg-white px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900">
               <Ionicons name="trash-outline" size={16} color="#991B1B" />
               <Text className="text-sm font-semibold text-red-800">Remove</Text>
             </Pressable>
@@ -258,17 +258,17 @@ export default function CardScreen() {
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic">
         <View className="items-center pt-2">
-          <View className="aspect-[3/4] w-[48%] overflow-hidden rounded-2xl border border-neutral-300 bg-white">
+          <View className="aspect-[3/4] w-[48%] overflow-hidden rounded-2xl border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-900">
             <Image source={{ uri: imageUri }} className="h-full w-full" resizeMode="cover" />
           </View>
         </View>
 
         <View className="mt-5">
           <View className="flex-row items-center gap-3">
-            <Text className="text-3xl font-bold text-neutral-900">{name}</Text>
+            <Text className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">{name}</Text>
             <Pressable
               onPress={() => toggleFavorite(selectedCard.id)}
-              className="h-10 w-10 items-center justify-center rounded-full border border-neutral-300 bg-white"
+              className="h-10 w-10 items-center justify-center rounded-full border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-900"
               accessibilityRole="button"
               accessibilityLabel={isFavorite ? 'Remove from favorites' : 'Add to favorites'}>
               <Ionicons
@@ -278,20 +278,20 @@ export default function CardScreen() {
               />
             </Pressable>
           </View>
-          <Text className="mt-1 text-lg text-neutral-700">
+          <Text className="mt-1 text-lg text-neutral-700 dark:text-neutral-300">
             {[category, setName].filter(Boolean).join(' ') || 'Pokemon Card'}
           </Text>
-          <Text className="mt-1 text-lg text-neutral-700">
+          <Text className="mt-1 text-lg text-neutral-700 dark:text-neutral-300">
             {[rarity, localId].filter(Boolean).join(' • ')}
           </Text>
         </View>
 
         <View className="mt-5 flex-row items-end justify-between">
           <View>
-            <Text className="text-sm font-medium uppercase tracking-wide text-neutral-500">
+            <Text className="text-sm font-medium uppercase tracking-wide text-neutral-500 dark:text-neutral-400">
               Current value
             </Text>
-            <Text className="text-3xl font-bold text-neutral-900">
+            <Text className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
               {formatCurrency(marketPrice)}
             </Text>
           </View>
@@ -302,22 +302,22 @@ export default function CardScreen() {
               {isPositive ? '+' : '-'}
               {formatCurrency(Math.abs(priceChange))} ({Math.abs(priceChangePct).toFixed(2)}%)
             </Text>
-            <Text className="text-sm text-neutral-500">vs previous</Text>
+            <Text className="text-sm text-neutral-500 dark:text-neutral-400">vs previous</Text>
           </View>
         </View>
 
-        <View className="mt-4 border-t border-dashed border-neutral-300" />
+        <View className="mt-4 border-t border-dashed border-neutral-300 dark:border-neutral-700" />
 
-        <View className="mt-5 rounded-2xl border border-neutral-300 bg-white px-4 pb-4 pt-3">
+        <View className="mt-5 rounded-2xl border border-neutral-300 bg-white px-4 pb-4 pt-3 dark:border-neutral-700 dark:bg-neutral-900">
           <View className="mb-2 flex-row items-center justify-between">
-            <Text className="text-xs font-medium text-neutral-500">Trend range</Text>
-            <Text className="text-xs font-medium text-neutral-500">{variant}</Text>
+            <Text className="text-xs font-medium text-neutral-500 dark:text-neutral-400">Trend range</Text>
+            <Text className="text-xs font-medium text-neutral-500 dark:text-neutral-400">{variant}</Text>
           </View>
 
           <View className="relative h-36">
-            <View className="absolute inset-x-0 top-6 border-t border-dashed border-neutral-200" />
-            <View className="absolute inset-x-0 top-[70px] border-t border-dashed border-neutral-200" />
-            <View className="absolute inset-x-0 top-[116px] border-t border-dashed border-neutral-200" />
+            <View className="absolute inset-x-0 top-6 border-t border-dashed border-neutral-200 dark:border-neutral-700" />
+            <View className="absolute inset-x-0 top-[70px] border-t border-dashed border-neutral-200 dark:border-neutral-700" />
+            <View className="absolute inset-x-0 top-[116px] border-t border-dashed border-neutral-200 dark:border-neutral-700" />
 
             <View className="h-full flex-row items-end gap-1">
               {rangeSeries.map((point, index) => {
@@ -339,9 +339,9 @@ export default function CardScreen() {
           </View>
 
           <View className="mt-2 flex-row items-center justify-between">
-            <Text className="text-xs text-neutral-500">{labelStart}</Text>
-            <Text className="text-xs text-neutral-500">{labelMid}</Text>
-            <Text className="text-xs text-neutral-500">{labelEnd}</Text>
+            <Text className="text-xs text-neutral-500 dark:text-neutral-400">{labelStart}</Text>
+            <Text className="text-xs text-neutral-500 dark:text-neutral-400">{labelMid}</Text>
+            <Text className="text-xs text-neutral-500 dark:text-neutral-400">{labelEnd}</Text>
           </View>
         </View>
 
@@ -353,11 +353,11 @@ export default function CardScreen() {
               className={`rounded-full border px-4 py-2 ${
                 range === option
                   ? 'border-neutral-900 bg-neutral-900'
-                  : 'border-neutral-300 bg-white'
+                  : 'border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-900'
               }`}>
               <Text
                 className={`text-sm font-semibold ${
-                  range === option ? 'text-white' : 'text-neutral-700'
+                  range === option ? 'text-white' : 'text-neutral-700 dark:text-neutral-300'
                 }`}>
                 {option}
               </Text>
@@ -365,10 +365,10 @@ export default function CardScreen() {
           ))}
         </View>
 
-        <View className="mt-5 rounded-2xl border border-neutral-300 bg-white px-4 pb-6 pt-3">
+        <View className="mt-5 rounded-2xl border border-neutral-300 bg-white px-4 pb-6 pt-3 dark:border-neutral-700 dark:bg-neutral-900">
           <View className="mb-3 flex-row items-center justify-between">
-            <Text className="text-base font-semibold text-neutral-900">Adding to: {name}</Text>
-            <Text className="text-base font-bold text-neutral-900">
+            <Text className="text-base font-semibold text-neutral-900 dark:text-neutral-100">Adding to: {name}</Text>
+            <Text className="text-base font-bold text-neutral-900 dark:text-neutral-100">
               Total: {formatCurrency(total)}
             </Text>
           </View>

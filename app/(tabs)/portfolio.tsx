@@ -74,7 +74,7 @@ export default function PortfolioScreen() {
   const hasZeroFavoriteCards = sortMode === 'Favorite' && favoriteCards.length === 0;
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white dark:bg-neutral-950">
       <View className="flex-1 px-5 pt-3">
         {isActionDropdownOpen ? (
           <Pressable
@@ -83,11 +83,11 @@ export default function PortfolioScreen() {
           />
         ) : null}
         <View className="mb-4 flex-row items-center justify-between">
-          <Text className="text-2xl font-bold text-neutral-900">Portfolio Screen</Text>
+          <Text className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Portfolio Screen</Text>
           <View className="relative z-50">
             <Pressable
               onPress={() => setIsActionDropdownOpen((prev) => !prev)}
-              className="h-9 w-9 items-center justify-center rounded-full border border-neutral-300">
+              className="h-9 w-9 items-center justify-center rounded-full border border-neutral-300 dark:border-neutral-700">
               <Ionicons name="ellipsis-vertical" size={18} color="#262626" />
             </Pressable>
 
@@ -95,12 +95,12 @@ export default function PortfolioScreen() {
               <View className="absolute right-0 top-11 z-50 min-w-[170px] ">
                 <View className="mb-4 flex-row items-center justify-between">
                   <Pressable
-                    className="rounded-lg border w-full border-neutral-300 px-3 py-2 bg-white"
+                    className="rounded-lg border w-full border-neutral-300 px-3 py-2 bg-white dark:border-neutral-700 dark:bg-neutral-900"
                     onPress={() => {
                       setIsActionDropdownOpen(false);
                       setIsClearConfirmOpen(true);
                     }}>
-                    <Text className="text-sm text-center font-medium text-neutral-700">
+                    <Text className="text-sm text-center font-medium text-neutral-700 dark:text-neutral-300">
                       Clear All Collection
                     </Text>
                   </Pressable>
@@ -123,32 +123,32 @@ export default function PortfolioScreen() {
             setIsSortDropdownOpen(false);
             setIsActionDropdownOpen(false);
           }}>
-          <View className="mb-5 overflow-hidden rounded-2xl border border-neutral-200 bg-white">
-            <View className="border-b border-neutral-200 px-4 py-4">
-              <Text className="text-xl font-semibold text-neutral-900">Portfolio Pokemon</Text>
+          <View className="mb-5 overflow-hidden rounded-2xl border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-900">
+            <View className="border-b border-neutral-200 px-4 py-4 dark:border-neutral-700">
+              <Text className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Portfolio Pokemon</Text>
             </View>
 
             <View className="flex-row px-2 py-4">
               <View className="w-1/3 items-center px-2">
                 <Ionicons name="albums-outline" size={18} color="#404040" />
-                <Text className="mt-1 text-lg font-semibold text-neutral-900">{totalCards}</Text>
-                <Text className="text-xs text-neutral-500">Total Cards</Text>
+                <Text className="mt-1 text-lg font-semibold text-neutral-900 dark:text-neutral-100">{totalCards}</Text>
+                <Text className="text-xs text-neutral-500 dark:text-neutral-400">Total Cards</Text>
               </View>
 
               <View className="w-1/3 items-center px-2">
                 <Ionicons name="cash-outline" size={18} color="#404040" />
-                <Text className="mt-1 text-lg font-semibold text-neutral-900">
+                <Text className="mt-1 text-lg font-semibold text-neutral-900 dark:text-neutral-100">
                   {formatCurrency(totalValue)}
                 </Text>
-                <Text className="text-xs text-neutral-500">Total Value</Text>
+                <Text className="text-xs text-neutral-500 dark:text-neutral-400">Total Value</Text>
               </View>
 
               <View className="w-1/3 items-center px-2">
                 <Ionicons name="stats-chart-outline" size={18} color="#404040" />
-                <Text className="mt-1 text-lg font-semibold text-neutral-900">
+                <Text className="mt-1 text-lg font-semibold text-neutral-900 dark:text-neutral-100">
                   {formatCurrency(averagePrice)}
                 </Text>
-                <Text className="text-xs text-neutral-500">Avg. Price</Text>
+                <Text className="text-xs text-neutral-500 dark:text-neutral-400">Avg. Price</Text>
               </View>
             </View>
           </View>
@@ -157,7 +157,7 @@ export default function PortfolioScreen() {
             <Pressable
               onPress={() => setIsSortDropdownOpen((prev) => !prev)}
               className="flex-row items-center">
-              <Text className="mr-1 text-lg font-semibold text-neutral-900">{sortMode}</Text>
+              <Text className="mr-1 text-lg font-semibold text-neutral-900 dark:text-neutral-100">{sortMode}</Text>
               <Ionicons
                 name={isSortDropdownOpen ? 'chevron-up' : 'chevron-down'}
                 size={16}
@@ -165,7 +165,7 @@ export default function PortfolioScreen() {
               />
             </Pressable>
             {isSortDropdownOpen ? (
-              <View className="absolute left-0 top-8 z-50 min-w-[170px] rounded-xl border border-neutral-200 bg-white p-1">
+              <View className="absolute left-0 top-8 z-50 min-w-[170px] rounded-xl border border-neutral-200 bg-white p-1 dark:border-neutral-700 dark:bg-neutral-900">
                 {SORT_OPTIONS.map((option) => (
                   <Pressable
                     key={option}
@@ -174,11 +174,15 @@ export default function PortfolioScreen() {
                       setIsSortDropdownOpen(false);
                     }}
                     className={`rounded-lg px-3 py-2 ${
-                      sortMode === option ? 'bg-neutral-100' : 'bg-white'
+                      sortMode === option
+                        ? 'bg-neutral-100 dark:bg-neutral-800'
+                        : 'bg-white dark:bg-neutral-900'
                     }`}>
                     <Text
                       className={`text-base ${
-                        sortMode === option ? 'font-semibold text-neutral-900' : 'text-neutral-700'
+                        sortMode === option
+                          ? 'font-semibold text-neutral-900 dark:text-neutral-100'
+                          : 'text-neutral-700 dark:text-neutral-300'
                       }`}>
                       {option}
                     </Text>
@@ -187,7 +191,7 @@ export default function PortfolioScreen() {
               </View>
             ) : null}
 
-            <View className="flex-row rounded-full border border-neutral-300 bg-white p-1">
+            <View className="flex-row rounded-full border border-neutral-300 bg-white p-1 dark:border-neutral-700 dark:bg-neutral-900">
               <Pressable
                 onPress={() => setViewMode('list')}
                 className={`mr-1 rounded-full px-3 py-1 ${
@@ -215,16 +219,16 @@ export default function PortfolioScreen() {
           </View>
 
           {cards.length === 0 ? (
-            <View className="mt-24 rounded-xl border border-neutral-200 bg-white p-6">
-              <Text className="text-center text-lg font-semibold text-neutral-700">
+            <View className="mt-24 rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-900">
+              <Text className="text-center text-lg font-semibold text-neutral-700 dark:text-neutral-300">
                 No cards in your portfolio yet.
               </Text>
             </View>
           ) : null}
 
           {hasZeroFavoriteCards && cards.length > 0 ? (
-            <View className="mt-24 rounded-xl border border-neutral-200 bg-white p-6">
-              <Text className="text-center text-lg font-semibold text-neutral-700">
+            <View className="mt-24 rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-700 dark:bg-neutral-900">
+              <Text className="text-center text-lg font-semibold text-neutral-700 dark:text-neutral-300">
                 You have zero favorite Card
               </Text>
             </View>
@@ -248,8 +252,8 @@ export default function PortfolioScreen() {
                         params: { id: card.id },
                       })
                     }
-                    className="mb-4 w-[48%] overflow-hidden rounded-xl border border-neutral-200 bg-white p-3">
-                    <View className="mb-3 aspect-[3/4] w-full overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100">
+                    className="mb-4 w-[48%] overflow-hidden rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-900">
+                    <View className="mb-3 aspect-[3/4] w-full overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800">
                       <Image
                         source={{
                           uri: card?.cardData?.image
@@ -261,11 +265,11 @@ export default function PortfolioScreen() {
                       />
                     </View>
 
-                    <Text className="text-lg font-semibold text-neutral-900">
+                    <Text className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
                       {card?.cardData?.name ?? 'Unknown Card'}
                     </Text>
 
-                    <Text className="mt-3 text-base font-semibold text-neutral-900">
+                    <Text className="mt-3 text-base font-semibold text-neutral-900 dark:text-neutral-100">
                       {formatCurrency(marketPrice)}
                     </Text>
 
@@ -294,9 +298,9 @@ export default function PortfolioScreen() {
                 return (
                   <View
                     key={card.id}
-                    className="mb-4 flex-row items-center justify-between rounded-xl border border-neutral-200 bg-white p-3">
+                    className="mb-4 flex-row items-center justify-between rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-900">
                     <View className="flex-row items-center">
-                      <View className="mr-3 aspect-[3/4] w-12 overflow-hidden rounded-md border border-neutral-200 bg-neutral-100">
+                      <View className="mr-3 aspect-[3/4] w-12 overflow-hidden rounded-md border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800">
                         <Image
                           source={{
                             uri: card?.cardData?.image
@@ -309,17 +313,17 @@ export default function PortfolioScreen() {
                       </View>
 
                       <View>
-                        <Text className="text-lg font-semibold text-neutral-900">
+                        <Text className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
                           {card?.cardData?.name ?? 'Unknown Card'}
                         </Text>
-                        <Text className="text-sm text-neutral-500">
+                        <Text className="text-sm text-neutral-500 dark:text-neutral-400">
                           {card?.cardData?.rarity ?? 'Unknown Rarity'}
                         </Text>
                       </View>
                     </View>
 
                     <View className="items-end">
-                      <Text className="text-lg font-semibold text-neutral-900">
+                      <Text className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
                         {formatCurrency(marketPrice)}
                       </Text>
                       <Text
@@ -346,17 +350,17 @@ export default function PortfolioScreen() {
           animationType="fade"
           onRequestClose={() => setIsClearConfirmOpen(false)}>
           <View className="flex-1 items-center justify-center bg-black/40 px-6">
-            <View className="w-full rounded-2xl bg-white p-5">
-              <Text className="text-lg font-semibold text-neutral-900">Clear all cards?</Text>
-              <Text className="mt-2 text-sm text-neutral-600">
+            <View className="w-full rounded-2xl bg-white p-5 dark:bg-neutral-900">
+              <Text className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Clear all cards?</Text>
+              <Text className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
                 This will remove all cards from your collection.
               </Text>
 
               <View className="mt-5 flex-row justify-end gap-2">
                 <Pressable
                   onPress={() => setIsClearConfirmOpen(false)}
-                  className="rounded-lg border border-neutral-300 px-4 py-2">
-                  <Text className="font-medium text-neutral-700">Cancel</Text>
+                  className="rounded-lg border border-neutral-300 px-4 py-2 dark:border-neutral-700">
+                  <Text className="font-medium text-neutral-700 dark:text-neutral-300">Cancel</Text>
                 </Pressable>
                 <Pressable
                   onPress={async () => {

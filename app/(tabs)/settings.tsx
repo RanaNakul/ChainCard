@@ -2,9 +2,22 @@ import React, { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import { type AppTheme, useCardStorage } from '../../src/stores/cardStorage';
 
 type ThemeOption = 'System' | 'Light' | 'Dark';
 type LanguageOption = 'English' | 'Hindi' | 'Spanish';
+
+const THEME_LABEL_TO_VALUE: Record<ThemeOption, AppTheme> = {
+  System: 'system',
+  Light: 'light',
+  Dark: 'dark',
+};
+
+const THEME_VALUE_TO_LABEL: Record<AppTheme, ThemeOption> = {
+  system: 'System',
+  light: 'Light',
+  dark: 'Dark',
+};
 
 type SelectorRowProps<T extends string> = {
   icon: React.ReactNode;
@@ -34,26 +47,26 @@ function SelectorRow<T extends string>({
   return (
     <View className="flex-row items-center justify-between py-4">
       <View className="flex-row items-center gap-3">
-        <View className="h-8 w-8 items-center justify-center rounded-full bg-neutral-100">
+        <View className="h-8 w-8 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800">
           {icon}
         </View>
-        <Text className="text-base font-medium text-neutral-900">{label}</Text>
+        <Text className="text-base font-medium text-neutral-900 dark:text-neutral-100">{label}</Text>
       </View>
       <View className={`relative ${isDropdownOpen ? 'z-50' : 'z-10'}`}>
 
         <Pressable
           onPress={onToggleDropdown}
-          className="flex-row items-center rounded-lg border border-neutral-300 bg-neutral-50 px-3 py-2">
-          <Text className="mr-2 text-sm font-medium text-neutral-700">{value}</Text>
+          className="flex-row items-center rounded-lg border border-neutral-300 bg-neutral-50 px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900">
+          <Text className="mr-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">{value}</Text>
           <Ionicons
             name={isDropdownOpen ? 'chevron-up' : 'chevron-down'}
             size={16}
-            color="#525252"
+            color="#737373"
           />
         </Pressable>
 
         {isDropdownOpen ? (
-          <View className="absolute right-0 top-10 z-50 min-w-[150px] rounded-xl border border-neutral-200 bg-white p-1">
+          <View className="absolute right-0 top-10 z-50 min-w-[150px] rounded-xl border border-neutral-200 bg-white p-1 dark:border-neutral-700 dark:bg-neutral-900">
             {options.map((option) => (
               <Pressable
                 key={option}
@@ -61,11 +74,15 @@ function SelectorRow<T extends string>({
                   onSelectOption(option);
                 }}
                 className={`rounded-lg px-3 py-2 ${
-                  value === option ? 'bg-neutral-100' : 'bg-white'
+                  value === option
+                    ? 'bg-neutral-100 dark:bg-neutral-800'
+                    : 'bg-white dark:bg-neutral-900'
                 }`}>
                 <Text
                   className={`text-base ${
-                    value === option ? 'font-semibold text-neutral-900' : 'text-neutral-700'
+                    value === option
+                      ? 'font-semibold text-neutral-900 dark:text-neutral-100'
+                      : 'text-neutral-700 dark:text-neutral-300'
                   }`}>
                   {option}
                 </Text>
@@ -96,7 +113,9 @@ function ActionRow({ icon, label, onPress }: ActionRowProps) {
 }
 
 export default function SettingsScreen() {
-  const [selectedTheme, setSelectedTheme] = useState<ThemeOption>('System');
+  const selectedThemeValue = useCardStorage((state) => state.theme);
+  const setTheme = useCardStorage((state) => state.setTheme);
+  const selectedTheme = THEME_VALUE_TO_LABEL[selectedThemeValue ?? 'system'];
   const [selectedLanguage, setSelectedLanguage] = useState<LanguageOption>('English');
   const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
@@ -110,12 +129,14 @@ export default function SettingsScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white dark:bg-neutral-950">
       <View className="flex-1 px-5 pt-3">
         {isThemeDropdownOpen || isLanguageDropdownOpen ? (
           <Pressable onPress={closeDropdowns} className="absolute inset-0 z-40" />
         ) : null}
-        <Text className="mb-4 text-center text-2xl font-bold text-neutral-900">Settings</Text>
+        <Text className="mb-4 text-center text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+          Settings
+        </Text>
 
         <View className="flex flex-1 justify-between px-4 pb-1">
           <View className="flex gap-4">
@@ -130,7 +151,7 @@ export default function SettingsScreen() {
                 setIsLanguageDropdownOpen(false);
               }}
               onSelectOption={(option) => {
-                setSelectedTheme(option);
+                setTheme(THEME_LABEL_TO_VALUE[option]);
                 setIsThemeDropdownOpen(false);
               }}
             />
@@ -196,7 +217,7 @@ export default function SettingsScreen() {
             /> */}
           </View>
 
-          <Text className="mt-6 text-center align-bottom text-sm text-neutral-500">
+          <Text className="mt-6 text-center align-bottom text-sm text-neutral-500 dark:text-neutral-400">
             © 2026 Chain Card
           </Text>
         </View>

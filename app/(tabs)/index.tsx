@@ -97,17 +97,17 @@ export default function App() {
   const hasZeroFavoriteCards = sortMode === 'Favorite' && favoriteCards.length === 0;
 
   return (
-    <SafeAreaView className="flex-1">
+    <SafeAreaView className="flex-1 bg-white dark:bg-neutral-950">
       <View className="px-6 py-4">
         <View className="flex flex-row items-center justify-between">
           <Text className="text-3xl font-bold text-[#9945FF]">ChainCard</Text>
         </View>
-        <View className="mt-5 gap-3 rounded-xl border border-neutral-200 bg-white p-5">
-          <Text className="text-xl font-semibold text-neutral-900">Portfolio Value</Text>
+        <View className="mt-5 gap-3 rounded-xl border border-neutral-200 bg-white p-5 dark:border-neutral-700 dark:bg-neutral-900">
+          <Text className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Portfolio Value</Text>
           <View className="flex gap-3">
             <View className="flex flex-row items-center gap-3">
               {showPortfolioValue ? (
-                <Text className="text-3xl font-bold text-neutral-900">
+                <Text className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
                   $ {totalPortfolioValue?.toFixed(2)}
                 </Text>
               ) : (
@@ -115,7 +115,7 @@ export default function App() {
               )}
               <Pressable
                 onPress={() => setShowPortfolioValue((prev) => !prev)}
-                className="rounded-lg border border-neutral-300 bg-neutral-100 p-2">
+                className="rounded-lg border border-neutral-300 bg-neutral-100 p-2 dark:border-neutral-700 dark:bg-neutral-800">
                 {showPortfolioValue ? (
                   <Ionicons name="eye" size={16} color="#525252" />
                 ) : (
@@ -125,7 +125,7 @@ export default function App() {
             </View>
             {showPortfolioValue && (
               <>
-                <Text className="text-xl font-medium text-neutral-700">SOL {sol?.toFixed(6)}</Text>
+                <Text className="text-xl font-medium text-neutral-700 dark:text-neutral-300">SOL {sol?.toFixed(6)}</Text>
                 {/* <View className="flex flex-row items-center gap-3">
             <Text className="text-base font-semibold text-red-500">- $ 20.33</Text>
             <Text className="text-base font-semibold text-red-500">2.00%</Text>
@@ -148,7 +148,7 @@ export default function App() {
                 <Pressable
                   onPress={() => setIsSortDropdownOpen((prev) => !prev)}
                   className="flex-row items-center">
-                  <Text className="mr-1 text-lg font-semibold text-neutral-900">{sortMode}</Text>
+                  <Text className="mr-1 text-lg font-semibold text-neutral-900 dark:text-neutral-100">{sortMode}</Text>
                   <Ionicons
                     name={isSortDropdownOpen ? 'chevron-up' : 'chevron-down'}
                     size={16}
@@ -156,7 +156,7 @@ export default function App() {
                   />
                 </Pressable>
                 {isSortDropdownOpen ? (
-                  <View className="absolute left-0 top-8 z-50 min-w-[170px] rounded-xl border border-neutral-200 bg-white p-1">
+                  <View className="absolute left-0 top-8 z-50 min-w-[170px] rounded-xl border border-neutral-200 bg-white p-1 dark:border-neutral-700 dark:bg-neutral-900">
                     {SORT_OPTIONS.map((option) => (
                       <Pressable
                         key={option}
@@ -165,13 +165,15 @@ export default function App() {
                           setIsSortDropdownOpen(false);
                         }}
                         className={`rounded-lg px-3 py-2 ${
-                          sortMode === option ? 'bg-neutral-100' : 'bg-white'
+                          sortMode === option
+                            ? 'bg-neutral-100 dark:bg-neutral-800'
+                            : 'bg-white dark:bg-neutral-900'
                         }`}>
                         <Text
                           className={`text-base ${
                             sortMode === option
-                              ? 'font-semibold text-neutral-900'
-                              : 'text-neutral-700'
+                              ? 'font-semibold text-neutral-900 dark:text-neutral-100'
+                              : 'text-neutral-700 dark:text-neutral-300'
                           }`}>
                           {option}
                         </Text>
@@ -180,7 +182,7 @@ export default function App() {
                   </View>
                 ) : null}
               </View>
-              <View className="flex-row rounded-full border border-neutral-300 bg-white p-1">
+              <View className="flex-row rounded-full border border-neutral-300 bg-white p-1 dark:border-neutral-700 dark:bg-neutral-900">
                 <Pressable
                   onPress={() => setViewMode('list')}
                   className={`mr-1 rounded-full px-3 py-1 ${
@@ -212,8 +214,8 @@ export default function App() {
               onScrollBeginDrag={() => setIsSortDropdownOpen(false)}
               refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />}>
               {hasZeroFavoriteCards ? (
-                <View className="mt-40 rounded-xl bg-white p-6">
-                  <Text className="text-center text-lg font-semibold text-neutral-800">
+                <View className="mt-40 rounded-xl bg-white p-6 dark:bg-neutral-900">
+                  <Text className="text-center text-lg font-semibold text-neutral-800 dark:text-neutral-200">
                     You have zero favorite Card
                   </Text>
                 </View>
@@ -287,7 +289,7 @@ export default function App() {
                             params: { id: card.id },
                           })
                         }
-                        className="mb-5 flex flex-row items-center justify-between rounded-xl border border-neutral-300 p-5">
+                        className="mb-5 flex flex-row items-center justify-between rounded-xl border border-neutral-300 p-5 dark:border-neutral-700">
                         <View className="flex flex-row items-center gap-3">
                           <View className="h-14 w-10 rounded-full bg-neutral-900">
                             <Image
@@ -300,10 +302,10 @@ export default function App() {
                             />
                           </View>
                           <View>
-                            <Text className="text-lg font-semibold text-neutral-900">
+                            <Text className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
                               {card?.cardData?.name}
                             </Text>
-                            <Text className="text-base font-medium text-neutral-600">
+                            <Text className="text-base font-medium text-neutral-600 dark:text-neutral-400">
                               {card?.cardData?.rarity}
                             </Text>
                           </View>
@@ -339,10 +341,10 @@ export default function App() {
           </>
         ) : (
           <View className="mt-60 ">
-            <Text className="text-center text-lg font-semibold text-neutral-700">
+            <Text className="text-center text-lg font-semibold text-neutral-700 dark:text-neutral-300">
               No cards in your portfolio yet.
             </Text>
-            <Text className="text-center text-lg font-semibold text-neutral-700">
+            <Text className="text-center text-lg font-semibold text-neutral-700 dark:text-neutral-300">
               Start adding some!
             </Text>
           </View>

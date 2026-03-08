@@ -110,10 +110,10 @@ export default function SearchScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
+    <SafeAreaView className="flex-1 bg-white dark:bg-neutral-950">
       <ScrollView className="flex-1">
         <View className="px-5 pb-8 pt-3">
-          <View className="mb-5 flex-row items-center rounded-full border border-neutral-300 bg-neutral-100 px-4 py-3">
+          <View className="mb-5 flex-row items-center rounded-full border border-neutral-300 bg-neutral-100 px-4 py-3 dark:border-neutral-700 dark:bg-neutral-900">
             <Ionicons name="search-outline" size={20} color="#525252" />
             <TextInput
               placeholder="Search For Card"
@@ -121,7 +121,7 @@ export default function SearchScreen() {
               value={query}
               onChangeText={setQuery}
               onSubmitEditing={() => addSearchToHistory(query)}
-              className="ml-2 flex-1 text-base text-neutral-900"
+              className="ml-2 flex-1 text-base text-neutral-900 dark:text-neutral-100"
             />
             {query.length > 0 ? (
               <Pressable
@@ -134,10 +134,10 @@ export default function SearchScreen() {
 
           {!trimmedQuery ? (
             <>
-              <Text className="mb-3 text-lg font-semibold text-neutral-900">Recent Searches</Text>
-              <View className="rounded-xl border border-neutral-200 bg-white px-4 py-2">
+              <Text className="mb-3 text-lg font-semibold text-neutral-900 dark:text-neutral-100">Recent Searches</Text>
+              <View className="rounded-xl border border-neutral-200 bg-white px-4 py-2 dark:border-neutral-700 dark:bg-neutral-900">
                 {filteredRecentSearches.length === 0 ? (
-                  <Text className="py-3 text-neutral-500">No recent searches</Text>
+                  <Text className="py-3 text-neutral-500 dark:text-neutral-400">No recent searches</Text>
                 ) : (
                   filteredRecentSearches.map((item, index) => (
                     <Pressable
@@ -148,12 +148,12 @@ export default function SearchScreen() {
                       }}
                       className={`flex-row items-center justify-between py-3 ${
                         index < filteredRecentSearches.length - 1
-                          ? 'border-b border-neutral-200'
+                          ? 'border-b border-neutral-200 dark:border-neutral-700'
                           : ''
                       }`}>
                       <View className="flex-row items-center">
-                        <Text className="mr-2 text-neutral-500">{index + 1}.</Text>
-                        <Text className="text-lg font-medium text-neutral-900">{item}</Text>
+                        <Text className="mr-2 text-neutral-500 dark:text-neutral-400">{index + 1}.</Text>
+                        <Text className="text-lg font-medium text-neutral-900 dark:text-neutral-100">{item}</Text>
                       </View>
                       <Ionicons name="arrow-up-outline" size={18} color="#6B7280" />
                     </Pressable>
@@ -166,9 +166,9 @@ export default function SearchScreen() {
           {trimmedQuery ? (
             <View className="mt-4">
               {isLoading ? (
-                <View className="items-center rounded-xl border border-neutral-200 bg-white py-10">
+                <View className="items-center rounded-xl border border-neutral-200 bg-white py-10 dark:border-neutral-700 dark:bg-neutral-900">
                   <ActivityIndicator color="#171717" />
-                  <Text className="mt-3 text-neutral-600">Searching cards...</Text>
+                  <Text className="mt-3 text-neutral-600 dark:text-neutral-400">Searching cards...</Text>
                 </View>
               ) : null}
 
@@ -184,24 +184,26 @@ export default function SearchScreen() {
               ) : null}
 
               {!isLoading && !error && results.length === 0 ? (
-                <View className="rounded-xl border border-neutral-200 bg-white py-8">
-                  <Text className="text-center text-neutral-500">
+                <View className="rounded-xl border border-neutral-200 bg-white py-8 dark:border-neutral-700 dark:bg-neutral-900">
+                  <Text className="text-center text-neutral-500 dark:text-neutral-400">
                     No cards found for {trimmedQuery}
                   </Text>
                 </View>
               ) : null}
 
               {!isLoading && !error && results.length > 0 ? (
-                <View className="rounded-xl border border-neutral-200 bg-white px-3 py-3">
+                <View className="rounded-xl border border-neutral-200 bg-white px-3 py-3 dark:border-neutral-700 dark:bg-neutral-900">
                   {results.map((card, index) => {
                     const imageUri = resolveCardImage(card.image);
                     return (
                       <View
                         key={card.id}
                         className={`flex-row py-3 ${
-                          index < results.length - 1 ? 'border-b border-neutral-200' : ''
+                          index < results.length - 1
+                            ? 'border-b border-neutral-200 dark:border-neutral-700'
+                            : ''
                         }`}>
-                        <View className="h-24 w-16 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100">
+                        <View className="h-24 w-16 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800">
                           {imageUri ? (
                             <Image
                               source={{ uri: imageUri }}
@@ -216,18 +218,18 @@ export default function SearchScreen() {
                         </View>
                         <View className="ml-3 flex-1 justify-center">
                           <Text
-                            className="text-base font-semibold text-neutral-900"
+                            className="text-base font-semibold text-neutral-900 dark:text-neutral-100"
                             numberOfLines={1}>
                             {card.name || 'Unknown card'}
                           </Text>
-                          <Text className="mt-1 text-sm text-neutral-600" numberOfLines={1}>
+                          <Text className="mt-1 text-sm text-neutral-600 dark:text-neutral-400" numberOfLines={1}>
                             {card.set?.name || 'Unknown set'}
                           </Text>
-                          <Text className="mt-1 text-xs text-neutral-500">
+                          <Text className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
                             {[card.category, card.rarity].filter(Boolean).join(' • ') || card.id}
                           </Text>
                           {card.localId ? (
-                            <Text className="mt-1 text-xs font-medium text-neutral-500">
+                            <Text className="mt-1 text-xs font-medium text-neutral-500 dark:text-neutral-400">
                               #{card.localId}
                             </Text>
                           ) : null}

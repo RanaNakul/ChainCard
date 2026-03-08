@@ -12,6 +12,8 @@ export interface CardScan {
   cardData?: any;
 }
 
+export type AppTheme = 'system' | 'light' | 'dark';
+
 interface CardStorageState {
   cards: CardScan[];
   isIdentifying: boolean;
@@ -21,13 +23,14 @@ interface CardStorageState {
   favoriteCards?: CardScan[];
   searchHistory?: string[];
   rarestCards?: CardScan[];
-  theme?: 'light' | 'dark';
+  theme: AppTheme;
   saveCardScan: (imageUri: string, cardData?: any) => Promise<CardScan>;
   removeScan: (id: string) => Promise<void>;
   toggleFavorite: (id: string) => void;
   clearAll: () => Promise<void>;
   calPortfolioValue: () => Promise<void>;
   addToHistory: (query: string) => void;
+  setTheme: (theme: AppTheme) => void;
   setISaveing: (isSaving: boolean) => void;
   setIsIdentifying: (isIdentifying: boolean) => void;
 }
@@ -81,7 +84,7 @@ export const useCardStorage = create<CardStorageState>()(
       favoriteCards: [],
       searchHistory: [],
       rarestCards: [],
-      theme: 'light',
+      theme: 'system',
       saveCardScan: async (imageUri: string, cardData) => {
         set({ error: null });
         try {
@@ -114,6 +117,10 @@ export const useCardStorage = create<CardStorageState>()(
             ].slice(0, 8),
           };
         }),
+
+      setTheme: (theme: AppTheme) => {
+        set({ theme });
+      },
 
       calPortfolioValue: async () => {
         set((state) => ({
