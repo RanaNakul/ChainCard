@@ -1,9 +1,11 @@
 import React, { useMemo, useState } from 'react';
-import { Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useCardStorage } from '../../src/stores/cardStorage';
+import { mintPokemonCardNFT } from '../../src/services/nftService';
+import { useWallet } from '../../src/hooks/useWallet';
 
 type RangeKey = '1M' | '3M' | '6M' | '12M';
 
@@ -94,6 +96,12 @@ export default function CardScreen() {
   const favoriteCards = useCardStorage((state) => state.favoriteCards ?? []);
   const removeScan = useCardStorage((state) => state.removeScan);
   const toggleFavorite = useCardStorage((state) => state.toggleFavorite);
+  const isDevnet = useCardStorage((state) => state.isDevnet);
+  const mintedCards = useCardStorage((state) => state.mintedCards);
+  const isMinting = useCardStorage((state) => state.isMinting);
+  const setIsMinting = useCardStorage((state) => state.setIsMinting);
+  const addMintedCard = useCardStorage((state) => state.addMintedCard);
+  const { connected, publicKey } = useWallet();
 
   const [range, setRange] = useState<RangeKey>('3M');
   const [ungradedQty, setUngradedQty] = useState(1);
@@ -107,10 +115,43 @@ export default function CardScreen() {
     return cards[cards.length - 1];
   }, [cardId, cards]);
 
+  // Check if this card has already been minted
+  const mintedEntry = useMemo(() => {
+    if (!selectedCard) return undefined;
+    return mintedCards.find((m) => m.cardId === selectedCard.id);
+  }, [selectedCard, mintedCards]);
+
+  const handleMintNFT = async () => {
+    if (!selectedCard || isMinting) return;
+    if (!publicKey) {
+      Alert.alert('Error', 'Wallet not connected');
+      return;
+    }
+    setIsMinting(true);
+    try {
+      const result = await mintPokemonCardNFT(selectedCard.id, isDevnet, publicKey.toBase58());
+      addMintedCard(selectedCard.id, result.mintAddress);
+      Alert.alert(
+        'NFT Minted! 🎉',
+        `Your Pokémon card has been minted as an NFT.\n\nMint: ${result.mintAddress.slice(0, 8)}...${result.mintAddress.slice(-8)}`
+      );
+    } catch (error: any) {
+      console.error('[Mint] Failed:', error);
+      Alert.alert(
+        'Minting Failed',
+        error?.message ?? 'An unexpected error occurred while minting.'
+      );
+    } finally {
+      setIsMinting(false);
+    }
+  };
+
   if (!selectedCard) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-[#F6F4EF] px-6 dark:bg-neutral-950">
-        <Text className="mb-2 text-xl font-semibold text-neutral-900 dark:text-neutral-100">No card selected</Text>
+        <Text className="mb-2 text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+          No card selected
+        </Text>
         <Text className="mb-6 text-center text-neutral-600 dark:text-neutral-400">
           Open this screen from your card list to view details.
         </Text>
@@ -202,7 +243,9 @@ export default function CardScreen() {
     return (
       <View className="flex-row items-center justify-between rounded-xl border border-neutral-200 px-3 py-3 dark:border-neutral-700">
         <View className="w-[34%]">
-          <Text className="text-base font-semibold text-neutral-900 dark:text-neutral-100">{label}</Text>
+          <Text className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
+            {label}
+          </Text>
           <Text className="text-xs text-neutral-500 dark:text-neutral-400">{subtitle}</Text>
         </View>
 
@@ -226,7 +269,9 @@ export default function CardScreen() {
           <Text className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
             {formatCurrency(rowTotal)}
           </Text>
-          <Text className="text-xs text-neutral-500 dark:text-neutral-400">{formatCurrency(unitPrice)} each</Text>
+          <Text className="text-xs text-neutral-500 dark:text-neutral-400">
+            {formatCurrency(unitPrice)} each
+          </Text>
         </View>
       </View>
     );
@@ -265,7 +310,9 @@ export default function CardScreen() {
 
         <View className="mt-5">
           <View className="flex-row items-center gap-3">
-            <Text className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">{name}</Text>
+            <Text className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+              {name}
+            </Text>
             <Pressable
               onPress={() => toggleFavorite(selectedCard.id)}
               className="h-10 w-10 items-center justify-center rounded-full border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-900"
@@ -310,8 +357,12 @@ export default function CardScreen() {
 
         <View className="mt-5 rounded-2xl border border-neutral-300 bg-white px-4 pb-4 pt-3 dark:border-neutral-700 dark:bg-neutral-900">
           <View className="mb-2 flex-row items-center justify-between">
-            <Text className="text-xs font-medium text-neutral-500 dark:text-neutral-400">Trend range</Text>
-            <Text className="text-xs font-medium text-neutral-500 dark:text-neutral-400">{variant}</Text>
+            <Text className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+              Trend range
+            </Text>
+            <Text className="text-xs font-medium text-neutral-500 dark:text-neutral-400">
+              {variant}
+            </Text>
           </View>
 
           <View className="relative h-36">
@@ -367,7 +418,9 @@ export default function CardScreen() {
 
         <View className="mt-5 rounded-2xl border border-neutral-300 bg-white px-4 pb-6 pt-3 dark:border-neutral-700 dark:bg-neutral-900">
           <View className="mb-3 flex-row items-center justify-between">
-            <Text className="text-base font-semibold text-neutral-900 dark:text-neutral-100">Adding to: {name}</Text>
+            <Text className="text-base font-semibold text-neutral-900 dark:text-neutral-100">
+              Adding to: {name}
+            </Text>
             <Text className="text-base font-bold text-neutral-900 dark:text-neutral-100">
               Total: {formatCurrency(total)}
             </Text>
@@ -384,6 +437,42 @@ export default function CardScreen() {
             />
           </View>
         </View>
+
+        {/* ===== MINT NFT BUTTON ===== */}
+        {connected && (
+          <View className="mb-8 mt-5">
+            {mintedEntry ? (
+              <View className="flex-row items-center justify-center gap-2 rounded-2xl border border-emerald-300 bg-emerald-50 px-5 py-4 dark:border-emerald-700 dark:bg-emerald-950">
+                <Ionicons name="checkmark-circle" size={20} color="#10B981" />
+                <Text className="text-base font-bold text-emerald-700 dark:text-emerald-400">
+                  MINTED ✓
+                </Text>
+                <Text className="ml-1 text-xs text-emerald-600 dark:text-emerald-500">
+                  {mintedEntry.mintAddress.slice(0, 6)}...{mintedEntry.mintAddress.slice(-4)}
+                </Text>
+              </View>
+            ) : (
+              <Pressable
+                onPress={handleMintNFT}
+                disabled={isMinting}
+                className={`flex-row items-center justify-center gap-2 rounded-2xl px-5 py-4 ${
+                  isMinting ? 'bg-neutral-400 dark:bg-neutral-600' : 'bg-[#9945FF]'
+                }`}>
+                {isMinting ? (
+                  <>
+                    <ActivityIndicator size="small" color="#fff" />
+                    <Text className="text-base font-bold text-white">MINTING...</Text>
+                  </>
+                ) : (
+                  <>
+                    <Ionicons name="diamond-outline" size={18} color="#fff" />
+                    <Text className="text-base font-bold text-white">MINT NFT (Beta)</Text>
+                  </>
+                )}
+              </Pressable>
+            )}
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
