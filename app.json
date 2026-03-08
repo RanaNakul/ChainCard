@@ -43,11 +43,15 @@
       },
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO",
-        "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
       "package": "com.anonymous.chaincard"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "2920d8f0-37a7-4f2d-81cd-0d63b0464111"
+      }
     }
   }
 }
