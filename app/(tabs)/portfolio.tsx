@@ -83,7 +83,7 @@ export default function PortfolioScreen() {
           />
         ) : null}
         <View className="mb-4 flex-row items-center justify-between">
-          <Text className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Portfolio Screen</Text>
+          <Text className="text-2xl font-bold text-[#9945FF] ">Portfolio Screen</Text>
           <View className="relative z-50">
             <Pressable
               onPress={() => setIsActionDropdownOpen((prev) => !prev)}
