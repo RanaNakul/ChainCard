@@ -15,6 +15,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useCardStorage } from '../../src/stores/cardStorage';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSolPrice } from '../../src/hooks/useSolPrice';
+import { useWallet } from '../../src/hooks/useWallet';
+import { ConnectButton } from '../../src/components/ConnectButton';
 
 type ViewMode = 'grid' | 'list';
 type SortMode = 'Most Valuable' | 'Newest' | 'Favorite' | 'Least Valuable';
@@ -52,6 +54,7 @@ export default function App() {
   const cards = useCardStorage((state) => state.cards);
   const favoriteCards = useCardStorage((state) => state.favoriteCards ?? []);
   const { price, usdToSol } = useSolPrice();
+  const isDevnet = useCardStorage((state) => state.isDevnet);
 
   const [sol, setSol] = useState(0); // Get the current price of 1 USD in SOL
 
@@ -60,6 +63,7 @@ export default function App() {
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
   const [showPortfolioValue, setShowPortfolioValue] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const wallet = useWallet();
 
   useEffect(() => {
     if (price && totalPortfolioValue !== undefined && totalPortfolioValue >= 0) {
@@ -100,10 +104,24 @@ export default function App() {
     <SafeAreaView className="flex-1 bg-white dark:bg-neutral-950">
       <View className="px-6 py-4">
         <View className="flex flex-row items-center justify-between">
-          <Text className="text-3xl font-bold text-[#9945FF]">ChainCard</Text>
+          <View className="flex flex-row items-center gap-2">
+            <Text className="text-3xl font-bold text-[#9945FF]">ChainCard</Text>
+            <View className="h-3 w-3 rounded-full bg-[#F59E0B]" 
+              style={{ backgroundColor: isDevnet ? '#F59E0B' : '#10B981' }}
+            />
+          </View>
+          <ConnectButton
+            connected={wallet.connected}
+            connecting={wallet.connecting}
+            publicKey={wallet.publicKey?.toBase58() ?? null}
+            onConnect={wallet.connect}
+            onDisconnect={wallet.disconnect}
+          />
         </View>
         <View className="mt-5 gap-3 rounded-xl border border-neutral-200 bg-white p-5 dark:border-neutral-700 dark:bg-neutral-900">
-          <Text className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Portfolio Value</Text>
+          <Text className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+            Portfolio Value
+          </Text>
           <View className="flex gap-3">
             <View className="flex flex-row items-center gap-3">
               {showPortfolioValue ? (
@@ -125,7 +143,9 @@ export default function App() {
             </View>
             {showPortfolioValue && (
               <>
-                <Text className="text-xl font-medium text-neutral-700 dark:text-neutral-300">SOL {sol?.toFixed(6)}</Text>
+                <Text className="text-xl font-medium text-neutral-700 dark:text-neutral-300">
+                  SOL {sol?.toFixed(6)}
+                </Text>
                 {/* <View className="flex flex-row items-center gap-3">
             <Text className="text-base font-semibold text-red-500">- $ 20.33</Text>
             <Text className="text-base font-semibold text-red-500">2.00%</Text>
@@ -148,7 +168,9 @@ export default function App() {
                 <Pressable
                   onPress={() => setIsSortDropdownOpen((prev) => !prev)}
                   className="flex-row items-center">
-                  <Text className="mr-1 text-lg font-semibold text-neutral-900 dark:text-neutral-100">{sortMode}</Text>
+                  <Text className="mr-1 text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+                    {sortMode}
+                  </Text>
                   <Ionicons
                     name={isSortDropdownOpen ? 'chevron-up' : 'chevron-down'}
                     size={16}
