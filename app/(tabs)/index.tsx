@@ -96,7 +96,7 @@ export default function App() {
     }
 
     return favoriteCards;
-  }, [cards, sortMode]);
+  }, [cards, sortMode, favoriteCards]);
 
   const hasZeroFavoriteCards = sortMode === 'Favorite' && favoriteCards.length === 0;
 
@@ -106,7 +106,8 @@ export default function App() {
         <View className="flex flex-row items-center justify-between">
           <View className="flex flex-row items-center gap-2">
             <Text className="text-3xl font-bold text-[#9945FF]">ChainCard</Text>
-            <View className="h-3 w-3 rounded-full bg-[#F59E0B]" 
+            <View
+              className="h-3 w-3 rounded-full bg-[#F59E0B]"
               style={{ backgroundColor: isDevnet ? '#F59E0B' : '#10B981' }}
             />
           </View>
@@ -352,7 +353,7 @@ export default function App() {
               {!hasZeroFavoriteCards && (
                 <Pressable
                   onPress={() => router.push('/portfolio')}
-                  className="mt-4 w-full items-center justify-center rounded-xl border border-neutral-300 bg-[#9945FF] py-3">
+                  className="mt-4 w-full items-center justify-center rounded-xl  bg-[#9945FF] py-3">
                   <Text className="text-center text-lg font-semibold text-white">
                     View All Cards
                   </Text>

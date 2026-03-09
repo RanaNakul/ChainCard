@@ -253,7 +253,7 @@ export default function CardScreen() {
           <Pressable
             onPress={onMinus}
             className="h-7 w-7 items-center justify-center rounded-full border border-neutral-300 dark:border-neutral-700">
-            <Ionicons name="remove" size={14} color="#171717" />
+            <Ionicons name="remove" size={14} color="#525252" />
           </Pressable>
           <Text className="min-w-[18px] text-center text-base font-semibold text-neutral-900 dark:text-neutral-100">
             {qty}
@@ -261,7 +261,7 @@ export default function CardScreen() {
           <Pressable
             onPress={onPlus}
             className="h-7 w-7 items-center justify-center rounded-full border border-neutral-300 dark:border-neutral-700">
-            <Ionicons name="add" size={14} color="#171717" />
+            <Ionicons name="add" size={14} color="#525252" />
           </Pressable>
         </View>
 
@@ -284,7 +284,7 @@ export default function CardScreen() {
           <Pressable
             onPress={() => router.back()}
             className="h-10 w-10 items-center justify-center rounded-full border border-neutral-300 bg-white dark:border-neutral-700 dark:bg-neutral-900">
-            <Ionicons name="arrow-back" size={20} color="#171717" />
+            <Ionicons name="arrow-back" size={20} color="#525252" />
           </Pressable>
 
           <View className="flex-row items-center gap-2">
@@ -320,8 +320,8 @@ export default function CardScreen() {
               accessibilityLabel={isFavorite ? 'Remove from favorites' : 'Add to favorites'}>
               <Ionicons
                 name={isFavorite ? 'heart' : 'heart-outline'}
-                size={20}
-                color={isFavorite ? '#DC2626' : '#171717'}
+                size={22}
+                color={isFavorite ? '#DC2626' : '#525252'}
               />
             </Pressable>
           </View>
@@ -379,7 +379,7 @@ export default function CardScreen() {
                   <View key={`${point}-${index}`} className="flex-1 items-center justify-end">
                     <View
                       className={`w-full rounded-t-full ${
-                        isLast ? 'bg-neutral-900' : 'bg-neutral-300'
+                        isLast ? 'bg-neutral-600' : 'bg-neutral-300'
                       }`}
                       style={{ height }}
                     />

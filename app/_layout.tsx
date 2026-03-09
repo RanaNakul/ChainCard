@@ -1,4 +1,3 @@
-import "../src/polyfills"
 import { Stack } from 'expo-router';
 import '../global.css';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -17,7 +16,7 @@ export default function RootLayout() {
     if (appliedThemePreference.current === themePreference) return;
     appliedThemePreference.current = themePreference;
     setColorScheme(themePreference);
-  }, [themePreference]);
+  }, [themePreference, setColorScheme]);
 
   const isDark = colorScheme === 'dark';
 

@@ -13,17 +13,25 @@ export interface CardScan {
   cardData?: any;
 }
 
+export interface MintedCard {
+  cardId: string;
+  mintAddress: string;
+  mintedAt: number;
+}
+
 export type AppTheme = 'system' | 'light' | 'dark';
 
 interface CardStorageState {
   cards: CardScan[];
   isIdentifying: boolean;
   isSaving: boolean;
+  isMinting: boolean;
   error: string | null;
   totalPortfolioValue?: number;
   favoriteCards?: CardScan[];
   searchHistory?: string[];
   rarestCards?: CardScan[];
+  mintedCards: MintedCard[];
   theme: AppTheme;
   isDevnet: boolean;
   connectedPublicKey: PublicKey | null;
@@ -37,8 +45,11 @@ interface CardStorageState {
   setTheme: (theme: AppTheme) => void;
   setISaveing: (isSaving: boolean) => void;
   setIsIdentifying: (isIdentifying: boolean) => void;
+  setIsMinting: (isMinting: boolean) => void;
   toggleNetwork: () => void;
   setConnectedPublicKey: (publicKey: PublicKey | null) => void;
+  addMintedCard: (cardId: string, mintAddress: string) => void;
+  setMintedCards: (cards: MintedCard[]) => void;
 }
 
 function getFileExtension(uri: string): string {
@@ -84,12 +95,14 @@ export const useCardStorage = create<CardStorageState>()(
     (set, get) => ({
       cards: [],
       isSaving: false,
+      isMinting: false,
       error: null,
       totalPortfolioValue: 0,
       isIdentifying: false,
       favoriteCards: [],
       searchHistory: [],
       rarestCards: [],
+      mintedCards: [],
       theme: 'system',
       isDevnet: true,
       connectedPublicKey: null,
@@ -98,7 +111,16 @@ export const useCardStorage = create<CardStorageState>()(
 
       setConnectedPublicKey: (publicKey: PublicKey | null) =>
         set({ connectedPublicKey: publicKey }),
-      
+
+      setIsMinting: (isMinting: boolean) => set({ isMinting }),
+
+      addMintedCard: (cardId: string, mintAddress: string) =>
+        set((state) => ({
+          mintedCards: [...state.mintedCards, { cardId, mintAddress, mintedAt: Date.now() }],
+        })),
+
+      setMintedCards: (cards: MintedCard[]) => set({ mintedCards: cards }),
+
       saveCardScan: async (imageUri: string, cardData) => {
         set({ error: null });
         try {

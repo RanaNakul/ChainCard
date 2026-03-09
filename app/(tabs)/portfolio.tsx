@@ -95,12 +95,12 @@ export default function PortfolioScreen() {
               <View className="absolute right-0 top-11 z-50 min-w-[170px] ">
                 <View className="mb-4 flex-row items-center justify-between">
                   <Pressable
-                    className="rounded-lg border w-full border-neutral-300 px-3 py-2 bg-white dark:border-neutral-700 dark:bg-neutral-900"
+                    className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 dark:border-neutral-700 dark:bg-neutral-900"
                     onPress={() => {
                       setIsActionDropdownOpen(false);
                       setIsClearConfirmOpen(true);
                     }}>
-                    <Text className="text-sm text-center font-medium text-neutral-700 dark:text-neutral-300">
+                    <Text className="text-center text-sm font-medium text-neutral-700 dark:text-neutral-300">
                       Clear All Collection
                     </Text>
                   </Pressable>
@@ -110,12 +110,6 @@ export default function PortfolioScreen() {
           </View>
         </View>
 
-        {isSortDropdownOpen ? (
-          <Pressable
-            onPress={() => setIsSortDropdownOpen(false)}
-            className="absolute inset-0 z-40"
-          />
-        ) : null}
         <ScrollView
           className="flex-1"
           showsVerticalScrollIndicator={false}
@@ -125,13 +119,17 @@ export default function PortfolioScreen() {
           }}>
           <View className="mb-5 overflow-hidden rounded-2xl border border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-900">
             <View className="border-b border-neutral-200 px-4 py-4 dark:border-neutral-700">
-              <Text className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Portfolio Pokemon</Text>
+              <Text className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+                Portfolio Pokemon
+              </Text>
             </View>
 
             <View className="flex-row px-2 py-4">
               <View className="w-1/3 items-center px-2">
                 <Ionicons name="albums-outline" size={18} color="#404040" />
-                <Text className="mt-1 text-lg font-semibold text-neutral-900 dark:text-neutral-100">{totalCards}</Text>
+                <Text className="mt-1 text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+                  {totalCards}
+                </Text>
                 <Text className="text-xs text-neutral-500 dark:text-neutral-400">Total Cards</Text>
               </View>
 
@@ -153,11 +151,20 @@ export default function PortfolioScreen() {
             </View>
           </View>
 
+          {isSortDropdownOpen ? (
+            <Pressable
+              onPress={() => setIsSortDropdownOpen(false)}
+              className="absolute inset-0 z-40"
+            />
+          ) : null}
+          
           <View className="mb-3 flex-row items-center justify-between">
             <Pressable
               onPress={() => setIsSortDropdownOpen((prev) => !prev)}
               className="flex-row items-center">
-              <Text className="mr-1 text-lg font-semibold text-neutral-900 dark:text-neutral-100">{sortMode}</Text>
+              <Text className="mr-1 text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+                {sortMode}
+              </Text>
               <Ionicons
                 name={isSortDropdownOpen ? 'chevron-up' : 'chevron-down'}
                 size={16}
@@ -296,8 +303,14 @@ export default function PortfolioScreen() {
                 const isPositive = priceChange >= 0;
 
                 return (
-                  <View
+                  <TouchableOpacity
                     key={card.id}
+                    onPress={() =>
+                      router.push({
+                        pathname: '/card',
+                        params: { id: card.id },
+                      })
+                    }
                     className="mb-4 flex-row items-center justify-between rounded-xl border border-neutral-200 bg-white p-3 dark:border-neutral-700 dark:bg-neutral-900">
                     <View className="flex-row items-center">
                       <View className="mr-3 aspect-[3/4] w-12 overflow-hidden rounded-md border border-neutral-200 bg-neutral-100 dark:border-neutral-700 dark:bg-neutral-800">
@@ -335,7 +348,7 @@ export default function PortfolioScreen() {
                         %)
                       </Text>
                     </View>
-                  </View>
+                  </TouchableOpacity>
                 );
               })}
             </View>
@@ -351,7 +364,9 @@ export default function PortfolioScreen() {
           onRequestClose={() => setIsClearConfirmOpen(false)}>
           <View className="flex-1 items-center justify-center bg-black/40 px-6">
             <View className="w-full rounded-2xl bg-white p-5 dark:bg-neutral-900">
-              <Text className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Clear all cards?</Text>
+              <Text className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+                Clear all cards?
+              </Text>
               <Text className="mt-2 text-sm text-neutral-600 dark:text-neutral-400">
                 This will remove all cards from your collection.
               </Text>
